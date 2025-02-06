@@ -83,6 +83,7 @@ namespace Chess
 
         public Board Move(FigureMoving fm)
         {
+
             Board next = new Board(fen);
             next.SetFigureAt(fm.from, Figure.None);//клетка освобождается откуда сделан ход
             next.SetFigureAt(fm.to, fm.promotion == Figure.None ? fm.Figure : fm.promotion);//ход осуществляется, если есть превращение то фигура меняется 
