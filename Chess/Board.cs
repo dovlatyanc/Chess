@@ -75,7 +75,7 @@ namespace Chess
             return Figure.None;
         }
 
-        void SetFigureAt(Square square, Figure figure)
+        public void SetFigureAt(Square square, Figure figure)
         {
             if (square.OnBoard())
                 figures[square.x, square.y] = figure;
@@ -86,7 +86,53 @@ namespace Chess
 
             Board next = new Board(fen);
             next.SetFigureAt(fm.from, Figure.None);//клетка освобождается откуда сделан ход
-            next.SetFigureAt(fm.to, fm.promotion == Figure.None ? fm.Figure : fm.promotion);//ход осуществляется, если есть превращение то фигура меняется 
+            next.SetFigureAt(fm.to, fm.promotion == Figure.None ? fm.Figure : fm.promotion);//ход осуществляется, если есть превращение то фигура меняется
+                                                                                            //// Рокировка
+            if (fm.Figure == Figure.whiteKing || fm.Figure == Figure.blackKing)
+            {
+                if (fm.AbsDeltaX == 2) // Это рокировка
+                {
+                    int rookFromX, rookToX;
+
+                    if (fm.to.x == 6) // Короткая рокировка
+                    {
+                        rookFromX = 7;
+                        rookToX = 5;
+                    }
+                    else // Длинная рокировка
+                    {
+                        rookFromX = 0;
+                        rookToX = 3;
+                    }
+
+                    // Перемещаем ладью
+                    Figure rook = GetFigure(new Square(rookFromX, fm.from.y));
+                    SetFigureAt(new Square(rookToX, fm.from.y), rook);
+                    SetFigureAt(new Square(rookFromX, fm.from.y), Figure.None);
+                }
+
+                // Отмечаем, что король двигался
+                if (fm.Figure == Figure.whiteKing)
+                    Castling.hasMovedWhiteKing = true;
+                else
+                    Castling.hasMovedBlackKing = true;
+            }
+
+            // Отмечаем, что ладьи двигались
+            if (fm.Figure == Figure.whiteRook)
+            {
+                if (fm.from.x == 7)
+                    Castling.hasMovedWhiteRookKingSide = true;
+                else if (fm.from.x == 0)
+                    Castling.hasMovedWhiteRookQueenSide = true;
+            }
+            else if (fm.Figure == Figure.blackRook)
+            {
+                if (fm.from.x == 7)
+                    Castling.hasMovedBlackRookKingSide = true;
+                else if (fm.from.x == 0)
+                    Castling.hasMovedBlackRookQueenSide = true;
+            }
             if (moveColor == Color.black)
                 next.moveNumber++;
             next.moveColor = moveColor.FlipColor();
