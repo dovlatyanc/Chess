@@ -59,6 +59,7 @@ namespace ChessGame
                 {
                     FigureMoving fm = new FigureMoving(fs, to);
                     if (moves.CanMove(fm))
+                        if(!board.IsCheckAfterMove(fm))
                         AllMoves.Add(fm);
                 }
 
@@ -71,6 +72,10 @@ namespace ChessGame
             foreach (var fm in AllMoves)
                 list.Add(fm.ToString());
             return list;
+        }
+        public bool IsCheck()
+        {
+            return board.IsCheck();
         }
     }
 }

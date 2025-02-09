@@ -136,7 +136,7 @@ namespace Chess
                     FigureState.hasMovedBlackRookQueenSide = true;
             }
 
-            if (fm.Figure == Figure.whitePawn || fm.Figure == Figure.blackPawn)
+            if (fm.Figure == Figure.whitePawn || fm.Figure == Figure.blackPawn)//реализовать чтоб пешка съедалась
             {
                 if (Math.Abs(fm.DeltaY) == 2)
                     FigureState.lastPawnMove = fm.to;
@@ -144,7 +144,7 @@ namespace Chess
                     FigureState.lastPawnMove = Square.None;
             }
 
-            // Реализуйте логику перемещения фигур
+
             if (moveColor == Color.black)
                 next.moveNumber++;
             next.moveColor = moveColor.FlipColor();
@@ -157,6 +157,43 @@ namespace Chess
             foreach (Square square in Square.YieldSquares())
                 if (GetFigure(square).GetColor() == moveColor)
                     yield return new FigureOnSquare(GetFigure(square), square);
+        }
+
+        public bool IsCheck()
+        {
+            Board after = new Board(fen);//создали новую доску
+            after.moveColor = moveColor.FlipColor();
+            return after.CanEatKing();
+        }
+
+        private bool CanEatKing()
+        {
+            Square badKing = FindBadKing();//найти чужого короля
+            Moves moves = new Moves(this);
+            foreach (FigureOnSquare fs in YieldFigures())
+            {
+                FigureMoving figmoving = new FigureMoving(fs, badKing);
+                if (moves.CanMove(figmoving))
+                    return true;
+            }
+            return false;
+
+        }
+
+        private Square FindBadKing()
+        {
+            Figure badKing = moveColor == Color.black ? Figure.whiteKing : Figure.blackKing;
+            foreach (Square square in Square.YieldSquares())
+                if (GetFigure(square) == badKing)
+                    return square;
+
+            return Square.None;
+        }
+
+        public bool IsCheckAfterMove(FigureMoving fm)
+        {
+            Board after = Move(fm);
+            return after.CanEatKing();
         }
     }
 }

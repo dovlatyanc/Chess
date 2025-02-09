@@ -19,7 +19,7 @@ namespace Chess
             this.y = y;
         }
 
-        public string Name { get { return ((char)('a' + x)).ToString() + (y + 1).ToString();  } }//coord клетки в виде строки
+        public string Name { get { return ((char)('a' + x)).ToString() + (y + 1).ToString();  } }//координаты клетки в виде строки
         public Square(string e2)
         {
             if (e2.Length == 2 &&

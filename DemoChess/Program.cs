@@ -6,12 +6,17 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        ChessGame.Chess chess = new("rnbqkbnr/pppp1ppp/8/6P1/4p3/8/PPPPPP1P/RNBQKBNR w KQkq - 0 1");
+        ChessGame.Chess chess = new("rnbqkbnr/p1111p1p/8/6P1/4p3/8/P111111P/RNBQKBNR w KQkq - 0 1");
+        List<string> list;
         while (true)
         {
+            Random random = new Random();
+            list = chess.GetAllMoves();
             Console.Clear();
             Console.WriteLine(chess.fen);
             Print(ChessToAscii(chess));
+
+            Console.WriteLine(chess.IsCheck()?"\nШАХ!!!":"-");
             Console.WriteLine();
             Console.WriteLine("Варианты ходов:");
 
@@ -20,7 +25,8 @@ internal class Program
             Console.WriteLine();
             Console.WriteLine("> ");
             string move = Console.ReadLine();
-            if (move == "") break;
+            if (move == "q") break;//выход
+            if( move=="")move = list[random.Next(list.Count)];//случвйный ход на ентер
             chess = chess.Move(move);
         }
 
