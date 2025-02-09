@@ -93,5 +93,12 @@ namespace Chess
             next.GenerateFen();
             return next;
         }
+
+        public IEnumerable<FigureOnSquare> YieldFigures()
+        {
+            foreach (Square square in Square.YieldSquares())
+                if (GetFigure(square).GetColor() == moveColor)
+                    yield return new FigureOnSquare(GetFigure(square), square);
+        }
     }
 }

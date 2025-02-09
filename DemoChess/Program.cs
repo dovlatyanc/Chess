@@ -6,13 +6,19 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        ChessGame.Chess chess = new ChessGame.Chess();
+        ChessGame.Chess chess = new("rnbqkbnr/p1111111/8/8/8/8/1P1111P1/RNBQKBNR w KQkq - 0 1");
         while (true)
         {
             Console.Clear();
             Console.WriteLine(chess.fen);
             Print(ChessToAscii(chess));
             Console.WriteLine();
+            Console.WriteLine("Варианты ходов:");
+
+            foreach(string  moves in chess.GetAllMoves())// выводим в консоль список всех возожных ходов
+                Console.Write(moves+"\n");
+            Console.WriteLine();
+            Console.WriteLine("> ");
             string move = Console.ReadLine();
             if (move == "") break;
             chess = chess.Move(move);

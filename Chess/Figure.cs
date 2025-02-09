@@ -21,7 +21,7 @@ namespace Chess
         blackRook = 'r',
         blackBishop = 'b',
         blackKnight = 'n',
-        blackPawn = 'P'
+        blackPawn = 'p'
     }
     static class FigureMethods
     {

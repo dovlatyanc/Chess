@@ -29,5 +29,22 @@ namespace Chess
             this.to = new Square(move.Substring(3, 2));
             this.promotion = (move.Length == 6) ? (Figure)move[5] : Figure.None;
         }
+
+        public int DeltaX { get { return to.x - from.x; } } 
+        public int DeltaY { get { return to.y - from.y; } } 
+        public int AbsDeltaX { get { return Math.Abs(DeltaX); } }
+        public int AbsDeltaY { get { return Math.Abs(DeltaY); } }
+        public int SignX { get { return Math.Sign(DeltaX); } }
+        public int SignY { get { return Math.Sign(DeltaY); } }
+
+        public override string ToString()
+        {
+            string str = (char)Figure + from.Name + to.Name;
+            if (promotion != Figure.None)
+                str += (char)promotion;
+            return str;
+        }
+
     }
+
 }

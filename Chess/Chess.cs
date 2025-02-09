@@ -12,12 +12,15 @@ namespace ChessGame
         public string fen { get; set; }
         Board board;
         Moves moves;
+        List<FigureMoving> AllMoves;
+        //"  потом вернуть обратно в конструктор
         public Chess(string fen = @"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         {
 
             this.fen = fen;
-           board = new Board(fen);
+            board = new Board(fen);
             moves = new Moves(board);
+
         }
 
         Chess(Board board)
@@ -36,8 +39,8 @@ namespace ChessGame
             Board nextBoard = board.Move(fm);
 
             Chess nextChess = new Chess(nextBoard);
-         
-          
+
+
             return nextChess;
         }
 
@@ -46,6 +49,28 @@ namespace ChessGame
             Square square = new Square(x, y);
             Figure f = board.GetFigure(square);
             return f == Figure.None ? '.' : (char)f;
+        }
+
+        void FindAllMoves()
+        {
+            AllMoves = new List<FigureMoving>();
+            foreach (FigureOnSquare fs in board.YieldFigures())
+                foreach (Square to in Square.YieldSquares())
+                {
+                    FigureMoving fm = new FigureMoving(fs, to);
+                    if (moves.CanMove(fm))
+                        AllMoves.Add(fm);
+                }
+
+
+        }
+        public List<string> GetAllMoves()
+        {
+            FindAllMoves();
+            List<string> list = new List<string>();
+            foreach (var fm in AllMoves)
+                list.Add(fm.ToString());
+            return list;
         }
     }
 }
