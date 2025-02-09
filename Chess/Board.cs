@@ -104,6 +104,77 @@ namespace Chess
                 figures[square.x, square.y] = figure;
         }
 
+        //public Board Move(FigureMoving fm)
+        //{
+        //    Board next = new Board(fen);
+        //    next.SetFigureAt(fm.from, Figure.None);
+        //    next.SetFigureAt(fm.to, fm.promotion == Figure.None ? fm.Figure : fm.promotion);
+
+        //    // Рокировка
+        //    if (fm.Figure == Figure.whiteKing || fm.Figure == Figure.blackKing)
+        //    {
+        //        if (fm.AbsDeltaX == 2) // Это рокировка
+        //        {
+        //            int rookFromX, rookToX;
+
+        //            if (fm.to.x == 6) // Короткая рокировка
+        //            {
+        //                rookFromX = 7;
+        //                rookToX = 5;
+        //            }
+        //            else // Длинная рокировка
+        //            {
+        //                rookFromX = 0;
+        //                rookToX = 3;
+        //            }
+
+        //            // Перемещаем ладью
+        //            Figure rook = GetFigureAt(new Square(rookFromX, fm.from.y));
+        //            next.SetFigureAt(new Square(rookToX, fm.from.y), rook);
+        //            next.SetFigureAt(new Square(rookFromX, fm.from.y), Figure.None);
+        //        }
+
+        //        // Отмечаем, что король двигался
+        //        if (fm.Figure == Figure.whiteKing)
+        //            next.hasMovedWhiteKing = true;
+        //        else
+        //            next.hasMovedBlackKing = true;
+        //    }
+
+        //    // Отмечаем, что ладьи двигались
+        //    if (fm.Figure == Figure.whiteRook)
+        //    {
+        //        if (fm.from.x == 7)
+        //            next.hasMovedWhiteRookKingSide = true;
+        //        else if (fm.from.x == 0)
+        //            next.hasMovedWhiteRookQueenSide = true;
+        //    }
+        //    else if (fm.Figure == Figure.blackRook)
+        //    {
+        //        if (fm.from.x == 7)
+        //            next.hasMovedBlackRookKingSide = true;
+        //        else if (fm.from.x == 0)
+        //            next.hasMovedBlackRookQueenSide = true;
+        //    }
+
+        //    // Взятие на проходе
+        //    if (fm.Figure == Figure.whitePawn || fm.Figure == Figure.blackPawn)
+        //    {
+        //        if (Math.Abs(fm.DeltaY) == 2)
+        //        {
+        //            next.lastPawnMove = fm.to;
+        //            next.SetFigureAt(new Square(fm.to.x, fm.from.y), Figure.None);
+        //        }
+        //        else
+        //            next.lastPawnMove = Square.None;
+        //    }
+
+        //    if (moveColor == Color.black)
+        //        next.moveNumber++;
+        //    next.moveColor = moveColor.FlipColor();
+        //    next.GenerateFen();
+        //    return next;
+        //}
         public Board Move(FigureMoving fm)
         {
             Board next = new Board(fen);
@@ -160,10 +231,29 @@ namespace Chess
             // Взятие на проходе
             if (fm.Figure == Figure.whitePawn || fm.Figure == Figure.blackPawn)
             {
+                // Проверка на взятие на проходе
+                if (fm.AbsDeltaX == 1 && fm.DeltaY != 0 && GetFigureAt(fm.to) == Figure.None)
+                {
+                    // Пешка противника только что сделала ход на две клетки
+                    Square enemyPawnSquare = new Square(fm.to.x, fm.from.y);
+                    Figure enemyPawn = GetFigureAt(enemyPawnSquare);
+
+                    if (enemyPawn == (fm.Figure == Figure.whitePawn ? Figure.blackPawn : Figure.whitePawn))
+                    {
+                        // Удаляем пешку противника
+                        next.SetFigureAt(enemyPawnSquare, Figure.None);
+                    }
+                }
+
+                // Обновляем последний ход пешки
                 if (Math.Abs(fm.DeltaY) == 2)
+                {
                     next.lastPawnMove = fm.to;
+                }
                 else
+                {
                     next.lastPawnMove = Square.None;
+                }
             }
 
             if (moveColor == Color.black)

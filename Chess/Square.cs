@@ -52,6 +52,12 @@ namespace Chess
         {
             return !(a == b);
         }
+
+        public static explicit operator Square((int x, int y) v)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Equals(Square other)
         {
             return x == other.x && y == other.y;
