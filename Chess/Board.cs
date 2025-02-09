@@ -305,5 +305,6 @@ namespace Chess
             Board after = Move(fm);
             return after.CanEatKing();
         }
+       
     }
 }

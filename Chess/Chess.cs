@@ -35,6 +35,9 @@ namespace ChessGame
             FigureMoving fm = new FigureMoving(move);
             if (!moves.CanMove(fm))//можно ли сделать ход
                 return this;
+            if (board.IsCheckAfterMove(fm))//если шах после хода для движения короля на битое поле
+                return this;
+
 
             Board nextBoard = board.Move(fm);
 
@@ -64,6 +67,15 @@ namespace ChessGame
                 }
 
 
+        }
+
+        public bool IsCheckMate()
+        {
+            return IsCheck() && AllMoves.Count == 0;
+        }
+        public bool IsPat()
+        {
+            return !IsCheck() && AllMoves.Count == 0;
         }
         public List<string> GetAllMoves()
         {

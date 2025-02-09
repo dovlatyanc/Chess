@@ -6,7 +6,7 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        ChessGame.Chess chess = new("rnbqkbnr/pppp1ppp/8/2P5/4p3/8/PP1PPPPP/R111K11R w KQkq - 0 1");
+        ChessGame.Chess chess = new("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         List<string> list;
         while (true)
         {
@@ -16,7 +16,10 @@ internal class Program
             Console.WriteLine(chess.fen);
             Print(ChessToAscii(chess));
 
-            Console.WriteLine(chess.IsCheck()?"\nШАХ!!!":"-");
+            Console.WriteLine(chess.IsCheck()?"\nШАХ":"-");
+            Console.Write(chess.IsCheckMate()?" и МАТ":"-");
+            Console.WriteLine(chess.IsPat()?"\nНичья!":"-");//добавить ничью при трех одинакомых ходах подряд
+
             Console.WriteLine();
             Console.WriteLine("Варианты ходов:");
 
