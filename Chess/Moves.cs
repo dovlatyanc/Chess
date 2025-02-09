@@ -5,7 +5,8 @@ internal class Moves
 {
     FigureMoving fm;
     Board board;
-    //поля для рокировки 
+
+ 
 
 
     public Moves(Board board)
@@ -74,12 +75,28 @@ internal class Moves
                CanPawnEat(stepY);
     }
 
-    private bool CanPawnEat(int stepY)
+    //private bool CanPawnEat(int stepY)
+    //{
+    //    if (board.GetFigure(fm.to) != Figure.None)
+    //        if (fm.AbsDeltaX == 1)
+    //            if (fm.DeltaY == stepY)
+    //                return true;
+    //    return false;
+    //}
+
+    private bool CanPawnEat(int stepY)//модифицированный вариант
     {
         if (board.GetFigure(fm.to) != Figure.None)
-            if (fm.AbsDeltaX == 1)
-                if (fm.DeltaY == stepY)
-                    return true;
+        {
+            if (fm.AbsDeltaX == 1 && fm.DeltaY == stepY)
+                return true;
+        }
+        else if (FigureState.lastPawnMove != null && fm.to.x == FigureState.lastPawnMove.x && fm.from.y == FigureState.lastPawnMove.y)
+        {
+            if (fm.AbsDeltaX == 1 && fm.DeltaY == stepY)
+                return true;
+        }
+
         return false;
     }
 
@@ -124,18 +141,18 @@ internal class Moves
         // Проверка на рокировку
         if (fm.AbsDeltaX == 2 && fm.AbsDeltaY == 0)
         {
-            if (fm.Figure == Figure.whiteKing && !Castling.hasMovedWhiteKing)
+            if (fm.Figure == Figure.whiteKing && !FigureState.hasMovedWhiteKing)
             {
-                if (fm.to.x == 6 && !Castling.hasMovedWhiteRookKingSide && IsPathClearForCastling(7, 5))
+                if (fm.to.x == 6 && !FigureState.hasMovedWhiteRookKingSide && IsPathClearForCastling(7, 5))
                     return true; // Короткая рокировка
-                if (fm.to.x == 2 && !Castling.hasMovedWhiteRookQueenSide && IsPathClearForCastling(0, 3))
+                if (fm.to.x == 2 && !FigureState.hasMovedWhiteRookQueenSide && IsPathClearForCastling(0, 3))
                     return true; // Длинная рокировка
             }
-            else if (fm.Figure == Figure.blackKing && !Castling.hasMovedBlackKing)
+            else if (fm.Figure == Figure.blackKing && !FigureState.hasMovedBlackKing)
             {
-                if (fm.to.x == 6 && !Castling.hasMovedBlackRookKingSide && IsPathClearForCastling(7, 5))
+                if (fm.to.x == 6 && !FigureState.hasMovedBlackRookKingSide && IsPathClearForCastling(7, 5))
                     return true; // Короткая рокировка
-                if (fm.to.x == 2 && !Castling.hasMovedBlackRookQueenSide && IsPathClearForCastling(0, 3))
+                if (fm.to.x == 2 && !FigureState.hasMovedBlackRookQueenSide && IsPathClearForCastling(0, 3))
                     return true; // Длинная рокировка
             }
         }

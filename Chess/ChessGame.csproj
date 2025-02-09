@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Board.cs" />
-    <Compile Include="Castling.cs" />
+    <Compile Include="FigureState.cs" />
     <Compile Include="Chess.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Figure.cs" />

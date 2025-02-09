@@ -13,6 +13,8 @@ namespace Chess
         Figure[,] figures;
         public Color moveColor { get; private set; }//чей ход
         public int moveNumber { get; private set; }//номер хода
+
+
         public Board(string fen)
         {
             this.fen = fen;
@@ -113,26 +115,36 @@ namespace Chess
 
                 // Отмечаем, что король двигался
                 if (fm.Figure == Figure.whiteKing)
-                    Castling.hasMovedWhiteKing = true;
+                    FigureState.hasMovedWhiteKing = true;
                 else
-                    Castling.hasMovedBlackKing = true;
+                    FigureState.hasMovedBlackKing = true;
             }
 
             // Отмечаем, что ладьи двигались
             if (fm.Figure == Figure.whiteRook)
             {
                 if (fm.from.x == 7)
-                    Castling.hasMovedWhiteRookKingSide = true;
+                    FigureState.hasMovedWhiteRookKingSide = true;
                 else if (fm.from.x == 0)
-                    Castling.hasMovedWhiteRookQueenSide = true;
+                    FigureState.hasMovedWhiteRookQueenSide = true;
             }
             else if (fm.Figure == Figure.blackRook)
             {
                 if (fm.from.x == 7)
-                    Castling.hasMovedBlackRookKingSide = true;
+                    FigureState.hasMovedBlackRookKingSide = true;
                 else if (fm.from.x == 0)
-                    Castling.hasMovedBlackRookQueenSide = true;
+                    FigureState.hasMovedBlackRookQueenSide = true;
             }
+
+            if (fm.Figure == Figure.whitePawn || fm.Figure == Figure.blackPawn)
+            {
+                if (Math.Abs(fm.DeltaY) == 2)
+                    FigureState.lastPawnMove = fm.to;
+                else
+                    FigureState.lastPawnMove = null;
+            }
+
+            // Реализуйте логику перемещения фигур
             if (moveColor == Color.black)
                 next.moveNumber++;
             next.moveColor = moveColor.FlipColor();

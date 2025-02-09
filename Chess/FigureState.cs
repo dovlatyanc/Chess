@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chess
 {
-    internal static class Castling
+    internal static class FigureState
     {
         public static bool hasMovedWhiteKing { get; set; }
 
@@ -15,5 +15,7 @@ namespace Chess
         public static bool hasMovedWhiteRookQueenSide { get; set; }
         public static bool hasMovedBlackRookKingSide { get; set; }
         public static bool hasMovedBlackRookQueenSide { get; set; }
+
+        public static Square? lastPawnMove { get; set; }; //последнее поле пешки
     }
 }
