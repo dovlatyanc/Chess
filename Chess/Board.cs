@@ -141,7 +141,7 @@ namespace Chess
                 if (Math.Abs(fm.DeltaY) == 2)
                     FigureState.lastPawnMove = fm.to;
                 else
-                    FigureState.lastPawnMove = null;
+                    FigureState.lastPawnMove = Square.None;
             }
 
             // Реализуйте логику перемещения фигур

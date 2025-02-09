@@ -16,6 +16,6 @@ namespace Chess
         public static bool hasMovedBlackRookKingSide { get; set; }
         public static bool hasMovedBlackRookQueenSide { get; set; }
 
-        public static Square? lastPawnMove { get; set; }; //последнее поле пешки
+        public static Square lastPawnMove { get; set; } //последнее поле пешки
     }
 }

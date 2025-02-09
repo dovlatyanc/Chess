@@ -52,5 +52,24 @@ namespace Chess
         {
             return !(a == b);
         }
+        public bool Equals(Square other)
+        {
+            return x == other.x && y == other.y;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Square other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(x, y);
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

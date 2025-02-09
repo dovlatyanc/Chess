@@ -84,7 +84,7 @@ internal class Moves
     //    return false;
     //}
 
-    private bool CanPawnEat(int stepY)//модифицированный вариант
+    private bool CanPawnEat(int stepY)
     {
         if (board.GetFigure(fm.to) != Figure.None)
         {
