@@ -6,7 +6,7 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        ChessGame.Chess chess = new("rnbqkbnr/p1111p1p/8/6P1/4p3/8/P111111P/RNBQKBNR w KQkq - 0 1");
+        ChessGame.Chess chess = new("rnbqkbnr/pppp1ppp/8/2P5/4p3/8/PP1PPPPP/R111K11R w KQkq - 0 1");
         List<string> list;
         while (true)
         {

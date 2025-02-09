@@ -6,7 +6,7 @@ internal class Moves
     FigureMoving fm;
     Board board;
 
- 
+
 
 
     public Moves(Board board)
@@ -33,7 +33,7 @@ internal class Moves
     {
         return fm.from.OnBoard() &&
             fm.from != fm.to &&
-            board.GetFigure(fm.to).GetColor() != board.moveColor;
+            board.GetFigureAt(fm.to).GetColor() != board.moveColor;
     }
 
     bool CanFigureMove()
@@ -86,12 +86,12 @@ internal class Moves
 
     private bool CanPawnEat(int stepY)
     {
-        if (board.GetFigure(fm.to) != Figure.None)
+        if (board.GetFigureAt(fm.to) != Figure.None)
         {
             if (fm.AbsDeltaX == 1 && fm.DeltaY == stepY)
                 return true;
         }
-        else if (FigureState.lastPawnMove != null && fm.to.x == FigureState.lastPawnMove.x && fm.from.y == FigureState.lastPawnMove.y)
+        else if (board.lastPawnMove != null && fm.to.x == board.lastPawnMove.x && fm.from.y == board.lastPawnMove.y)
         {
             if (fm.AbsDeltaX == 1 && fm.DeltaY == stepY)
                 return true;
@@ -102,18 +102,18 @@ internal class Moves
 
     private bool CanPawnJump(int stepY)
     {
-        if (board.GetFigure(fm.to) == Figure.None)
+        if (board.GetFigureAt(fm.to) == Figure.None)
             if (fm.DeltaX == 0)
                 if (fm.DeltaY == 2 * stepY)
                     if (fm.from.y == 1 || fm.from.y == 6)
-                        if (board.GetFigure(new Square(fm.from.x, fm.from.y + stepY)) == Figure.None)
+                        if (board.GetFigureAt(new Square(fm.from.x, fm.from.y + stepY)) == Figure.None)
                             return true;
         return false;
     }
 
     private bool CanPawnGo(int stepY)
     {
-        if (board.GetFigure(fm.to) == Figure.None)
+        if (board.GetFigureAt(fm.to) == Figure.None)
             if (fm.DeltaX == 0)
                 if (fm.DeltaY == stepY)
                     return true;
@@ -128,7 +128,7 @@ internal class Moves
             at = new Square(at.x + fm.SignX, at.y + fm.SignY);
             if (at == fm.to)
                 return true;
-        } while (at.OnBoard() && board.GetFigure(at) == Figure.None);
+        } while (at.OnBoard() && board.GetFigureAt(at) == Figure.None);
         return false;
     }
 
@@ -141,18 +141,18 @@ internal class Moves
         // Проверка на рокировку
         if (fm.AbsDeltaX == 2 && fm.AbsDeltaY == 0)
         {
-            if (fm.Figure == Figure.whiteKing && !FigureState.hasMovedWhiteKing)
+            if (fm.Figure == Figure.whiteKing && !board.hasMovedWhiteKing)
             {
-                if (fm.to.x == 6 && !FigureState.hasMovedWhiteRookKingSide && IsPathClearForCastling(7, 5))
+                if (fm.to.x == 6 && !board.hasMovedWhiteRookKingSide && IsPathClearForCastling(7, 5))
                     return true; // Короткая рокировка
-                if (fm.to.x == 2 && !FigureState.hasMovedWhiteRookQueenSide && IsPathClearForCastling(0, 3))
+                if (fm.to.x == 2 && !board.hasMovedWhiteRookQueenSide && IsPathClearForCastling(0, 3))
                     return true; // Длинная рокировка
             }
-            else if (fm.Figure == Figure.blackKing && !FigureState.hasMovedBlackKing)
+            else if (fm.Figure == Figure.blackKing && !board.hasMovedBlackKing)
             {
-                if (fm.to.x == 6 && !FigureState.hasMovedBlackRookKingSide && IsPathClearForCastling(7, 5))
+                if (fm.to.x == 6 && !board.hasMovedBlackRookKingSide && IsPathClearForCastling(7, 5))
                     return true; // Короткая рокировка
-                if (fm.to.x == 2 && !FigureState.hasMovedBlackRookQueenSide && IsPathClearForCastling(0, 3))
+                if (fm.to.x == 2 && !board.hasMovedBlackRookQueenSide && IsPathClearForCastling(0, 3))
                     return true; // Длинная рокировка
             }
         }
@@ -167,7 +167,7 @@ internal class Moves
 
         for (int x = start + 1; x < end; x++)
         {
-            if (board.GetFigure(new Square(x, fm.from.y)) != Figure.None)
+            if (board.GetFigureAt(new Square(x, fm.from.y)) != Figure.None)
                 return false;
         }
 

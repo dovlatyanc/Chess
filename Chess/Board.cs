@@ -1,19 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Chess
 {
     internal class Board
     {
-        public string fen { get; private set; }
-        Figure[,] figures;
-        public Color moveColor { get; private set; }//чей ход
-        public int moveNumber { get; private set; }//номер хода
+        public string fen { get; set; }
+        private Figure[,] figures;
+        public Color moveColor { get; set; }
+        public int moveNumber { get; set; }
 
+        // Состояние для рокировки и взятия на проходе
+        public bool hasMovedWhiteKing { get; set; }
+        public bool hasMovedBlackKing { get; set; }
+        public bool hasMovedWhiteRookKingSide { get; set; }
+        public bool hasMovedWhiteRookQueenSide { get; set; }
+        public bool hasMovedBlackRookKingSide { get; set; }
+        public bool hasMovedBlackRookQueenSide { get; set; }
+        public Square lastPawnMove { get; set; }
 
         public Board(string fen)
         {
@@ -21,18 +26,17 @@ namespace Chess
             figures = new Figure[8, 8];
             Init();
         }
-        //rnbqkbnr / pppppppp / 8 / 8 / 8 / 8 / PPPPPPPP / RNBQKBNR w KQkq - 0 1
+
         private void Init()
         {
             string[] parts = fen.Split();
             if (parts.Length != 6) return;
             InitFigures(parts[0]);
-            // InitColor(parts[1]);
             moveColor = (parts[1] == "b") ? Color.black : Color.white;
             moveNumber = int.Parse(parts[5]);
         }
 
-        void InitFigures(string data)
+        private void InitFigures(string data)
         {
             for (int j = 8; j >= 2; j--)
                 data = data.Replace(j.ToString(), (j - 1).ToString() + "1");
@@ -42,15 +46,34 @@ namespace Chess
             for (int y = 7; y >= 0; y--)
                 for (int x = 0; x < 8; x++)
                     figures[x, y] = lines[7 - y][x] == '.' ? Figure.None : (Figure)lines[7 - y][x];
-
         }
 
-        void GenerateFen()
+        private void GenerateFen()
         {
-            fen = FenFigures() + " " + (moveColor == Color.white ? "w" : "b") + " - - 0 " + moveNumber.ToString();//добавить рокировку ничью и взятие на проходе
+            fen = FenFigures() + " " +
+                  (moveColor == Color.white ? "w" : "b") + " " +
+                  GetCastleFlags() + " " +
+                  (lastPawnMove.OnBoard() ? lastPawnMove.Name : "-") + " " +
+                  "0 " + moveNumber.ToString();
         }
 
-        string FenFigures()
+        private string GetCastleFlags()
+        {
+            StringBuilder flags = new StringBuilder();
+            if (!hasMovedWhiteKing)
+            {
+                if (!hasMovedWhiteRookKingSide) flags.Append('K');
+                if (!hasMovedWhiteRookQueenSide) flags.Append('Q');
+            }
+            if (!hasMovedBlackKing)
+            {
+                if (!hasMovedBlackRookKingSide) flags.Append('k');
+                if (!hasMovedBlackRookQueenSide) flags.Append('q');
+            }
+            return flags.Length == 0 ? "-" : flags.ToString();
+        }
+
+        private string FenFigures()
         {
             StringBuilder sb = new StringBuilder();
             for (int y = 7; y >= 0; y--)
@@ -66,14 +89,12 @@ namespace Chess
                 sb.Replace(eight.Substring(0, j).ToString(), j.ToString());
 
             return sb.ToString();
-
         }
-        public Figure GetFigure(Square square)
-        {
 
+        public Figure GetFigureAt(Square square)
+        {
             if (square.OnBoard())
                 return figures[square.x, square.y];
-
             return Figure.None;
         }
 
@@ -85,11 +106,11 @@ namespace Chess
 
         public Board Move(FigureMoving fm)
         {
-
             Board next = new Board(fen);
-            next.SetFigureAt(fm.from, Figure.None);//клетка освобождается откуда сделан ход
-            next.SetFigureAt(fm.to, fm.promotion == Figure.None ? fm.Figure : fm.promotion);//ход осуществляется, если есть превращение то фигура меняется
-                                                                                            //// Рокировка
+            next.SetFigureAt(fm.from, Figure.None);
+            next.SetFigureAt(fm.to, fm.promotion == Figure.None ? fm.Figure : fm.promotion);
+
+            // Рокировка
             if (fm.Figure == Figure.whiteKing || fm.Figure == Figure.blackKing)
             {
                 if (fm.AbsDeltaX == 2) // Это рокировка
@@ -108,42 +129,42 @@ namespace Chess
                     }
 
                     // Перемещаем ладью
-                    Figure rook = GetFigure(new Square(rookFromX, fm.from.y));
-                    SetFigureAt(new Square(rookToX, fm.from.y), rook);
-                    SetFigureAt(new Square(rookFromX, fm.from.y), Figure.None);
+                    Figure rook = GetFigureAt(new Square(rookFromX, fm.from.y));
+                    next.SetFigureAt(new Square(rookToX, fm.from.y), rook);
+                    next.SetFigureAt(new Square(rookFromX, fm.from.y), Figure.None);
                 }
 
                 // Отмечаем, что король двигался
                 if (fm.Figure == Figure.whiteKing)
-                    FigureState.hasMovedWhiteKing = true;
+                    next.hasMovedWhiteKing = true;
                 else
-                    FigureState.hasMovedBlackKing = true;
+                    next.hasMovedBlackKing = true;
             }
 
             // Отмечаем, что ладьи двигались
             if (fm.Figure == Figure.whiteRook)
             {
                 if (fm.from.x == 7)
-                    FigureState.hasMovedWhiteRookKingSide = true;
+                    next.hasMovedWhiteRookKingSide = true;
                 else if (fm.from.x == 0)
-                    FigureState.hasMovedWhiteRookQueenSide = true;
+                    next.hasMovedWhiteRookQueenSide = true;
             }
             else if (fm.Figure == Figure.blackRook)
             {
                 if (fm.from.x == 7)
-                    FigureState.hasMovedBlackRookKingSide = true;
+                    next.hasMovedBlackRookKingSide = true;
                 else if (fm.from.x == 0)
-                    FigureState.hasMovedBlackRookQueenSide = true;
+                    next.hasMovedBlackRookQueenSide = true;
             }
 
-            if (fm.Figure == Figure.whitePawn || fm.Figure == Figure.blackPawn)//реализовать чтоб пешка съедалась
+            // Взятие на проходе
+            if (fm.Figure == Figure.whitePawn || fm.Figure == Figure.blackPawn)
             {
                 if (Math.Abs(fm.DeltaY) == 2)
-                    FigureState.lastPawnMove = fm.to;
+                    next.lastPawnMove = fm.to;
                 else
-                    FigureState.lastPawnMove = Square.None;
+                    next.lastPawnMove = Square.None;
             }
-
 
             if (moveColor == Color.black)
                 next.moveNumber++;
@@ -155,20 +176,20 @@ namespace Chess
         public IEnumerable<FigureOnSquare> YieldFigures()
         {
             foreach (Square square in Square.YieldSquares())
-                if (GetFigure(square).GetColor() == moveColor)
-                    yield return new FigureOnSquare(GetFigure(square), square);
+                if (GetFigureAt(square).GetColor() == moveColor)
+                    yield return new FigureOnSquare(GetFigureAt(square), square);
         }
 
         public bool IsCheck()
         {
-            Board after = new Board(fen);//создали новую доску
+            Board after = new Board(fen);
             after.moveColor = moveColor.FlipColor();
             return after.CanEatKing();
         }
 
         private bool CanEatKing()
         {
-            Square badKing = FindBadKing();//найти чужого короля
+            Square badKing = FindBadKing();
             Moves moves = new Moves(this);
             foreach (FigureOnSquare fs in YieldFigures())
             {
@@ -177,14 +198,13 @@ namespace Chess
                     return true;
             }
             return false;
-
         }
 
         private Square FindBadKing()
         {
             Figure badKing = moveColor == Color.black ? Figure.whiteKing : Figure.blackKing;
             foreach (Square square in Square.YieldSquares())
-                if (GetFigure(square) == badKing)
+                if (GetFigureAt(square) == badKing)
                     return square;
 
             return Square.None;

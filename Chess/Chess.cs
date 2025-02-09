@@ -47,7 +47,7 @@ namespace ChessGame
         public char GetFigureAt(int x, int y)
         {
             Square square = new Square(x, y);
-            Figure f = board.GetFigure(square);
+            Figure f = board.GetFigureAt(square);
             return f == Figure.None ? '.' : (char)f;
         }
 
